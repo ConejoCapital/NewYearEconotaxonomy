@@ -46,17 +46,38 @@ pip install -r requirements.txt
 
 ### Ejecutar simulación completa
 
+Desde la raíz del proyecto:
+```bash
+python run_simulation.py
+```
+
+O desde `src/`:
 ```bash
 cd src
 python run.py
 ```
 
-### Generar reportes desde resultados existentes
+### Generar visualizaciones y reportes
+
+Después de ejecutar la simulación, puedes generar reportes y gráficos:
 
 ```bash
 cd src
-python report.py outputs/runs/run_YYYYMMDD_HHMMSS_seed42.parquet outputs/runs/summary_YYYYMMDD_HHMMSS_seed42.csv
+python -c "
+from report import load_results, generate_text_report, plot_decisions_by_sector
+import glob
+run_files = sorted(glob.glob('../outputs/runs/run_*.parquet'))
+summary_files = sorted(glob.glob('../outputs/runs/summary_*.csv'))
+if run_files and summary_files:
+    firms_df, summary_df = load_results(run_files[-1], summary_files[-1])
+    generate_text_report(summary_df, '../outputs/report.txt')
+    plot_decisions_by_sector(firms_df, '../outputs/decisions_by_sector.png')
+"
 ```
+
+Esto genera:
+- `outputs/report.txt`: Reporte textual con estadísticas agregadas
+- `outputs/decisions_by_sector.png`: Gráficos de barras apiladas mostrando decisiones por sector
 
 ## Especificación del Modelo
 
@@ -165,6 +186,17 @@ El modelo incluye sanity checks:
 2. `open_no` siempre tiene costo laboral mayor que `open_sub` (si H no es enorme)
 3. Si ΔD = 0 y márgenes son bajos, muchas firmas deberían preferir cerrar
 
+## Resultados de Ejemplo
+
+Con los parámetros predeterminados (20,000 empresas, seed=42), la simulación muestra:
+
+- **Día Feriado (1 enero)**: 43.7% cierra, 56.3% abre con descanso sustitutorio, 0% abre sin descanso (3x)
+- **Día Bridge (2 enero)**: 72.1% opera normalmente, 27.9% adopta día no laborable
+- **Ventas totales**: S/ 247.9 millones (1-2 enero combinado)
+- **Manufacturing B2B**: Sector más afectado, 99.9% cierra el feriado debido a shocks de demanda negativos
+
+Los resultados detallados se guardan en `outputs/runs/` como archivos Parquet (datos completos) y CSV (resumen agregado).
+
 ## Extensiones Opcionales
 
 En `params.json` se pueden configurar (actualmente en 0.00):
@@ -174,4 +206,8 @@ En `params.json` se pueden configurar (actualmente en 0.00):
 ## Licencia
 
 Proyecto de investigación académica.
+
+## Repositorio
+
+Código disponible en: https://github.com/ConejoCapital/NewYearEconotaxonomy
 
