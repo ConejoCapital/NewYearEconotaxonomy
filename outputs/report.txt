@@ -1,0 +1,66 @@
+================================================================================
+REPORTE DE SIMULACIÓN ECONÓMICA - 1-2 ENERO 2026
+================================================================================
+
+Total de empresas simuladas: 20,000
+
+--- DECISIONES DÍA FERIADO (1 de enero) ---
+  Cerrar: 43.70%
+  Abrir con descanso sustitutorio: 56.31%
+  Abrir sin descanso sustitutorio (3x): 0.00%
+
+--- DECISIONES DÍA NO LABORABLE (2 de enero) ---
+  Operar normalmente: 72.13%
+  Adoptar día no laborable: 27.87%
+
+--- RESULTADOS FINANCIEROS ---
+Ventas totales (1-2 enero): S/ 247,936,065.35
+  - Día 1 (feriado): S/ 115,841,648.96
+  - Día 2 (bridge): S/ 132,094,416.40
+
+Costos laborales totales (1-2 enero): S/ 42,626,207.97
+  - Día 1 (feriado): S/ 29,309,147.13
+  - Día 2 (bridge): S/ 13,317,060.84
+
+Utilidad total (1-2 enero): S/ 26,562,360.60
+  - Día 1 (feriado): S/ 1,447,977.37
+  - Día 2 (bridge): S/ 25,114,383.23
+
+--- POR SECTOR ---
+
+Sector: LODGING
+  N empresas: 1397
+  Feriado - Cerrar: 7.52% | Con descanso: 92.48% | Sin descanso (3x): 0.00%
+  Bridge - Operar: 97.64% | Adoptar: 2.36%
+  Ventas totales: S/ 23,761,169.55
+  Utilidad promedio: S/ 7,228.08
+
+Sector: RESTAURANTS
+  N empresas: 3648
+  Feriado - Cerrar: 19.33% | Con descanso: 80.67% | Sin descanso (3x): 0.00%
+  Bridge - Operar: 91.58% | Adoptar: 8.42%
+  Ventas totales: S/ 49,027,548.76
+  Utilidad promedio: S/ 3,493.17
+
+Sector: RETAIL
+  N empresas: 6894
+  Feriado - Cerrar: 24.99% | Con descanso: 75.01% | Sin descanso (3x): 0.00%
+  Bridge - Operar: 76.70% | Adoptar: 23.30%
+  Ventas totales: S/ 48,646,390.01
+  Utilidad promedio: S/ 957.62
+
+Sector: TRANSPORT
+  N empresas: 2063
+  Feriado - Cerrar: 10.47% | Con descanso: 89.53% | Sin descanso (3x): 0.00%
+  Bridge - Operar: 95.01% | Adoptar: 4.99%
+  Ventas totales: S/ 24,347,670.87
+  Utilidad promedio: S/ 4,804.05
+
+Sector: MANUFACTURING_B2B
+  N empresas: 5998
+  Feriado - Cerrar: 99.87% | Con descanso: 0.13% | Sin descanso (3x): 0.00%
+  Bridge - Operar: 41.23% | Adoptar: 58.77%
+  Ventas totales: S/ 102,153,286.16
+  Utilidad promedio: S/ -2,132.54
+
+================================================================================
