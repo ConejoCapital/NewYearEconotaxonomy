@@ -26,6 +26,8 @@ wheels/
 # Outputs
 outputs/runs/*.parquet
 outputs/runs/*.csv
+outputs/runs_many.parquet
+outputs/summary_many.csv
 outputs/*.png
 outputs/*.txt
 

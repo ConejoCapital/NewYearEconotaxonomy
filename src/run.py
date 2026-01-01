@@ -6,6 +6,7 @@ decision making, and output generation.
 """
 
 import json
+import hashlib
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -26,6 +27,24 @@ def load_params(params_path: str = "data/params.json") -> Dict[str, Any]:
 def load_calendar(calendar_path: str = "data/calendar_2026.csv") -> pd.DataFrame:
     """Load calendar with day types."""
     return pd.read_csv(calendar_path, parse_dates=["date"])
+
+
+def cfg_hash(cfg: Dict[str, Any]) -> str:
+    """
+    Compute hash of configuration for traceability.
+    
+    Parameters:
+    -----------
+    cfg : dict
+        Configuration dictionary
+    
+    Returns:
+    --------
+    str
+        First 12 characters of SHA256 hash
+    """
+    s = json.dumps(cfg, sort_keys=True).encode()
+    return hashlib.sha256(s).hexdigest()[:12]
 
 
 def run(
@@ -198,6 +217,116 @@ def compute_summary(firms_df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFr
         })
     
     return pd.DataFrame(summary_rows)
+
+
+def run_once(seed: int, config: Dict[str, Any], silent: bool = True) -> Dict[str, Any]:
+    """
+    Run a single simulation and return flat dictionary of aggregated metrics.
+    
+    This function is designed for batch runs with multiple seeds and scenarios.
+    It does not save files, only returns metrics.
+    
+    Parameters:
+    -----------
+    seed : int
+        Random seed for reproducibility
+    config : dict
+        Configuration dictionary (same format as params.json)
+    silent : bool
+        If True, suppress print statements
+    
+    Returns:
+    --------
+    dict
+        Flat dictionary with all metrics (totals and by sector)
+    """
+    # Ensure seed is set in config for consistency
+    config_copy = config.copy()
+    config_copy["run"] = config_copy.get("run", {}).copy()
+    config_copy["run"]["seed"] = seed
+    
+    num_firms = config_copy["run"]["num_firms"]
+    
+    if not silent:
+        print(f"Running simulation: seed={seed}, firms={num_firms}")
+    
+    # Step 1: Generate firms
+    firms_df = generate_firms(num_firms, config_copy, seed=seed)
+    
+    # Step 2: Process holiday day
+    firms_df = compute_day_sales_and_costs(firms_df, "holiday", config_copy)
+    firms_df = decide_holiday(firms_df, config_copy)
+    firms_df = firms_df.rename(columns={"R_t": "R_1", "C_t": "C_1"})
+    
+    # Step 3: Process bridge day
+    firms_df = compute_day_sales_and_costs(firms_df, "bridge", config_copy)
+    firms_df = decide_bridge(firms_df, config_copy)
+    firms_df = firms_df.rename(columns={"R_t": "R_2", "C_t": "C_2"})
+    
+    # Step 4: Compute metrics
+    metrics = {}
+    
+    # Overall totals
+    metrics["n_firms_total"] = len(firms_df)
+    metrics["share_close_holiday_total"] = (firms_df["action_holiday"] == "close").mean()
+    metrics["share_open_sub_holiday_total"] = (firms_df["action_holiday"] == "open_sub").mean()
+    metrics["share_open_no_holiday_total"] = (firms_df["action_holiday"] == "open_no").mean()
+    metrics["share_operate_bridge_total"] = (firms_df["action_bridge"] == "operate").mean()
+    metrics["share_adopt_bridge_total"] = (firms_df["action_bridge"] == "adopt_bridge").mean()
+    
+    metrics["profit_day1_total"] = firms_df["profit_holiday"].sum()
+    metrics["profit_day2_total"] = firms_df["profit_bridge"].sum()
+    metrics["profit_total"] = metrics["profit_day1_total"] + metrics["profit_day2_total"]
+    
+    metrics["sales_day1_total"] = firms_df["R_1"].sum()
+    metrics["sales_day2_total"] = firms_df["R_2"].sum()
+    metrics["sales_total"] = metrics["sales_day1_total"] + metrics["sales_day2_total"]
+    
+    metrics["labor_cost_day1_total"] = firms_df["labor_cost_holiday"].sum()
+    metrics["labor_cost_day2_total"] = firms_df["labor_cost_bridge"].sum()
+    metrics["labor_cost_total"] = metrics["labor_cost_day1_total"] + metrics["labor_cost_day2_total"]
+    
+    # Derived metrics
+    if metrics["profit_day1_total"] != 0:
+        metrics["profit_ratio_day2_over_day1"] = metrics["profit_day2_total"] / abs(metrics["profit_day1_total"])
+    else:
+        metrics["profit_ratio_day2_over_day1"] = np.nan
+    
+    metrics["mean_profit_total"] = (firms_df["profit_holiday"] + firms_df["profit_bridge"]).mean()
+    metrics["median_profit_total"] = (firms_df["profit_holiday"] + firms_df["profit_bridge"]).median()
+    
+    # By sector
+    sectors = config_copy["sectors"]
+    for sector in sectors:
+        mask = firms_df["sector"] == sector
+        if mask.sum() == 0:
+            # Set defaults if no firms in sector
+            metrics[f"n_firms_{sector}"] = 0
+            metrics[f"holiday_close_share_{sector}"] = np.nan
+            metrics[f"holiday_open_sub_share_{sector}"] = np.nan
+            metrics[f"holiday_open_no_share_{sector}"] = np.nan
+            metrics[f"bridge_operate_share_{sector}"] = np.nan
+            metrics[f"bridge_adopt_share_{sector}"] = np.nan
+            metrics[f"profit_total_{sector}"] = 0.0
+            metrics[f"sales_total_{sector}"] = 0.0
+            continue
+        
+        sector_df = firms_df[mask]
+        metrics[f"n_firms_{sector}"] = mask.sum()
+        metrics[f"holiday_close_share_{sector}"] = (sector_df["action_holiday"] == "close").mean()
+        metrics[f"holiday_open_sub_share_{sector}"] = (sector_df["action_holiday"] == "open_sub").mean()
+        metrics[f"holiday_open_no_share_{sector}"] = (sector_df["action_holiday"] == "open_no").mean()
+        metrics[f"bridge_operate_share_{sector}"] = (sector_df["action_bridge"] == "operate").mean()
+        metrics[f"bridge_adopt_share_{sector}"] = (sector_df["action_bridge"] == "adopt_bridge").mean()
+        metrics[f"profit_total_{sector}"] = (sector_df["profit_holiday"] + sector_df["profit_bridge"]).sum()
+        metrics[f"sales_total_{sector}"] = (sector_df["R_1"] + sector_df["R_2"]).sum()
+        metrics[f"profit_day1_{sector}"] = sector_df["profit_holiday"].sum()
+        metrics[f"profit_day2_{sector}"] = sector_df["profit_bridge"].sum()
+    
+    # Add config hash for traceability
+    metrics["config_hash"] = cfg_hash(config_copy)
+    
+    return metrics
 
 
 if __name__ == "__main__":

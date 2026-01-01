@@ -79,6 +79,33 @@ Esto genera:
 - `outputs/report.txt`: Reporte textual con estadísticas agregadas
 - `outputs/decisions_by_sector.png`: Gráficos de barras apiladas mostrando decisiones por sector
 
+### Análisis robusto con múltiples seeds y escenarios
+
+Para análisis publicable con replicaciones Monte Carlo y análisis de sensibilidad:
+
+```bash
+# Correr 300 seeds por 9 escenarios (2,700 corridas totales)
+python scripts/run_many.py --seeds 300
+
+# O ajustar número de empresas para pruebas rápidas
+python scripts/run_many.py --seeds 50 --firms 5000
+```
+
+Esto genera:
+- `outputs/runs_many.parquet`: Datos completos de todas las corridas
+- `outputs/summary_many.csv`: Resumen agregado con estadísticas (mean, p10, p50, p90, std) por escenario
+
+**Escenarios incluidos:**
+1. `base`: Configuración base
+2. `tourism_demand_high`: Demanda turística +20%
+3. `tourism_demand_low`: Demanda turística -20%
+4. `H_high`: Costos de descanso sustitutorio ×1.5
+5. `H_low`: Costos de descanso sustitutorio ×0.5
+6. `bridge_attractive`: Bridge más atractivo (demanda +20%, Hcomp -20%)
+7. `bridge_costly`: Costos de bridge ×1.5
+8. `capacity_high`: Capacidad +20%
+9. `capacity_low`: Capacidad -20%
+
 ## Especificación del Modelo
 
 ### Inputs
