@@ -1,0 +1,138 @@
+{
+  "run": {
+    "num_firms": 20000,
+    "seed": 42
+  },
+
+  "macro_demand_anchors": {
+    "share_trips_newyear_within_period": 0.62,
+    "avg_spend_per_trip_pen": 539,
+    "avg_nights": 4
+  },
+
+  "sectors": [
+    "lodging",
+    "restaurants",
+    "retail",
+    "transport",
+    "manufacturing_b2b"
+  ],
+
+  "sector_weights": {
+    "lodging": 0.07,
+    "restaurants": 0.18,
+    "retail": 0.35,
+    "transport": 0.10,
+    "manufacturing_b2b": 0.30
+  },
+
+  "demand_shocks": {
+    "holiday": {
+      "lodging": 0.65,
+      "restaurants": 0.55,
+      "retail": 0.18,
+      "transport": 0.80,
+      "manufacturing_b2b": -0.45
+    },
+    "bridge": {
+      "lodging": 0.30,
+      "restaurants": 0.22,
+      "retail": 0.08,
+      "transport": 0.42,
+      "manufacturing_b2b": -0.20
+    }
+  },
+
+  "nonlabor_cost_shocks": {
+    "holiday": {
+      "lodging": 0.02,
+      "restaurants": 0.05,
+      "retail": 0.02,
+      "transport": 0.03,
+      "manufacturing_b2b": 0.00
+    },
+    "bridge": {
+      "lodging": 0.01,
+      "restaurants": 0.02,
+      "retail": 0.01,
+      "transport": 0.02,
+      "manufacturing_b2b": 0.00
+    }
+  },
+
+  "legal_cost_multipliers": {
+    "holiday_close_multiplier": 1.0,
+    "holiday_open_with_sub_multiplier": 2.0,
+    "holiday_open_no_sub_multiplier": 3.0
+  },
+
+  "behavioral": {
+    "holiday_tie_breaker_prefer_sub": true
+  },
+
+  "firm_generation": {
+    "salary_W_pen_per_worker": {
+      "lodging": { "dist": "uniform", "min": 85, "max": 160 },
+      "restaurants": { "dist": "uniform", "min": 70, "max": 150 },
+      "retail": { "dist": "uniform", "min": 65, "max": 140 },
+      "transport": { "dist": "uniform", "min": 90, "max": 180 },
+      "manufacturing_b2b": { "dist": "uniform", "min": 95, "max": 190 }
+    },
+
+    "workers_N": {
+      "lodging": { "dist": "discrete", "values": [3,4,5,6,7,8,10,12,15,20], "weights": [0.10,0.12,0.14,0.14,0.12,0.10,0.10,0.08,0.06,0.04] },
+      "restaurants": { "dist": "discrete", "values": [2,3,4,5,6,8,10,12,15,18,25], "weights": [0.10,0.14,0.16,0.14,0.12,0.10,0.08,0.06,0.05,0.03,0.02] },
+      "retail": { "dist": "discrete", "values": [1,2,3,4,5,6,8,10,12], "weights": [0.18,0.22,0.18,0.14,0.10,0.07,0.05,0.04,0.02] },
+      "transport": { "dist": "discrete", "values": [1,2,3,4,5,7,10,14], "weights": [0.18,0.22,0.18,0.14,0.10,0.08,0.06,0.04] },
+      "manufacturing_b2b": { "dist": "discrete", "values": [5,8,10,12,15,18,25,35,50], "weights": [0.10,0.12,0.14,0.14,0.14,0.12,0.10,0.08,0.06] }
+    },
+
+    "revenue_R_base_pen": {
+      "lodging": { "dist": "lognormal", "median": 5500, "sigma": 0.75, "min": 600, "max": 90000 },
+      "restaurants": { "dist": "lognormal", "median": 4200, "sigma": 0.80, "min": 500, "max": 70000 },
+      "retail": { "dist": "lognormal", "median": 2200, "sigma": 0.85, "min": 250, "max": 50000 },
+      "transport": { "dist": "lognormal", "median": 3200, "sigma": 0.85, "min": 300, "max": 70000 },
+      "manufacturing_b2b": { "dist": "lognormal", "median": 8500, "sigma": 0.90, "min": 900, "max": 200000 }
+    },
+
+    "nonlabor_cost_ratio_C_over_R": {
+      "lodging": { "dist": "uniform", "min": 0.35, "max": 0.55 },
+      "restaurants": { "dist": "uniform", "min": 0.55, "max": 0.75 },
+      "retail": { "dist": "uniform", "min": 0.70, "max": 0.88 },
+      "transport": { "dist": "uniform", "min": 0.45, "max": 0.70 },
+      "manufacturing_b2b": { "dist": "uniform", "min": 0.50, "max": 0.80 }
+    },
+
+    "capacity_multiplier_K_over_R": {
+      "lodging": { "dist": "uniform", "min": 1.05, "max": 1.25 },
+      "restaurants": { "dist": "uniform", "min": 1.05, "max": 1.35 },
+      "retail": { "dist": "uniform", "min": 1.10, "max": 1.60 },
+      "transport": { "dist": "uniform", "min": 1.10, "max": 1.50 },
+      "manufacturing_b2b": { "dist": "uniform", "min": 1.00, "max": 1.20 }
+    }
+  },
+
+  "policy_costs": {
+    "H_substitute_rest_factor_of_NW": {
+      "lodging": { "dist": "uniform", "min": 0.15, "max": 0.45 },
+      "restaurants": { "dist": "uniform", "min": 0.20, "max": 0.55 },
+      "retail": { "dist": "uniform", "min": 0.10, "max": 0.40 },
+      "transport": { "dist": "uniform", "min": 0.15, "max": 0.50 },
+      "manufacturing_b2b": { "dist": "uniform", "min": 0.25, "max": 0.70 }
+    },
+
+    "Hcomp_bridge_factor_of_NW": {
+      "lodging": { "dist": "uniform", "min": 0.08, "max": 0.25 },
+      "restaurants": { "dist": "uniform", "min": 0.10, "max": 0.30 },
+      "retail": { "dist": "uniform", "min": 0.05, "max": 0.20 },
+      "transport": { "dist": "uniform", "min": 0.08, "max": 0.28 },
+      "manufacturing_b2b": { "dist": "uniform", "min": 0.12, "max": 0.40 }
+    }
+  },
+
+  "optional_extensions": {
+    "online_sales_fraction_when_closed": 0.00,
+    "partial_operation_fraction_on_bridge_if_adopted": 0.00
+  }
+}
+

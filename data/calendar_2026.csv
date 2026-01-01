@@ -1,0 +1,4 @@
+date,is_holiday,is_bridge,label
+2026-01-01,1,0,NewYearHoliday
+2026-01-02,0,1,BridgeDay
+
