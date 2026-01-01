@@ -26,14 +26,12 @@ wheels/
 # Outputs - excluir archivos grandes y corridas individuales
 outputs/runs/*.parquet
 outputs/runs/*.csv
-outputs/runs_many.parquet
 
-# Incluir resúmenes y visualizaciones importantes para el repositorio
+# Incluir resúmenes, visualizaciones y datos completos para el repositorio
+# outputs/runs_many.parquet
 # outputs/summary_many.csv
 # outputs/summary_report.txt
 # outputs/scenario_comparison.png
-# outputs/decisions_by_sector.png
-# outputs/report.txt
 
 # IDE
 .vscode/
