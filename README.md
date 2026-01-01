@@ -213,16 +213,42 @@ El modelo incluye sanity checks:
 2. `open_no` siempre tiene costo laboral mayor que `open_sub` (si H no es enorme)
 3. Si ΔD = 0 y márgenes son bajos, muchas firmas deberían preferir cerrar
 
-## Resultados de Ejemplo
+## Resultados del Análisis Robusto
 
-Con los parámetros predeterminados (20,000 empresas, seed=42), la simulación muestra:
+**Análisis completado:** 300 seeds × 9 escenarios = **2,700 corridas** (1.3 minutos de ejecución)
 
-- **Día Feriado (1 enero)**: 43.7% cierra, 56.3% abre con descanso sustitutorio, 0% abre sin descanso (3x)
-- **Día Bridge (2 enero)**: 72.1% opera normalmente, 27.9% adopta día no laborable
-- **Ventas totales**: S/ 247.9 millones (1-2 enero combinado)
-- **Manufacturing B2B**: Sector más afectado, 99.9% cierra el feriado debido a shocks de demanda negativos
+### Resultados Principales (Escenario Base)
 
-Los resultados detallados se guardan en `outputs/runs/` como archivos Parquet (datos completos) y CSV (resumen agregado).
+Con los parámetros base y 300 replicaciones Monte Carlo:
+
+- **Día Feriado (1 enero)**: 
+  - 44.0% cierra (p10-p90: 43.0%-44.0%)
+  - 56.0% abre con descanso sustitutorio (p10-p90: 56.0%-57.0%)
+  - 0% abre sin descanso sustitutorio (3x)
+- **Día Bridge (2 enero)**: 
+  - 72.0% opera normalmente
+  - 28.0% adopta día no laborable (p10-p90: 27.0%-28.0%)
+- **Ventas totales**: S/ 249.6 millones (p10-p90: S/ 246.9-252.2 millones)
+- **Profit total**: S/ 26.6 millones (p10-p90: S/ 25.7-27.5 millones)
+
+### Análisis de Sensibilidad por Escenario
+
+**Escenarios más impactantes:**
+
+1. **Capacity High** (+20% capacidad): Profit total **S/ 39.5 millones** (↑48.6% vs base)
+2. **Capacity Low** (-20% capacidad): Profit total **S/ 5.9 millones** (↓77.7% vs base)
+3. **H Low** (costos descanso -50%): Profit total **S/ 27.4 millones** (↑3.2% vs base)
+4. **H High** (costos descanso +50%): Profit total **S/ 25.8 millones** (↓3.0% vs base)
+
+**Tasa de cierre en feriado:**
+- Capacity Low: 54.0% (más empresas cierran por restricciones)
+- Capacity High: 41.0% (menos empresas cierran, más pueden satisfacer demanda)
+- Base: 44.0% (estable)
+
+Los resultados completos se guardan en:
+- `outputs/runs_many.parquet`: Datos completos de las 2,700 corridas
+- `outputs/summary_many.csv`: Resumen agregado con estadísticas (mean, p10, p50, p90, std) por escenario
+- `outputs/scenario_comparison.png`: Gráficos comparativos por escenario
 
 ## Extensiones Opcionales
 
